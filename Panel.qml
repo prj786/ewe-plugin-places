@@ -70,18 +70,32 @@ Scope {
     function openAt(a) {
         if (a) root.anchor = a
         root.openScreen = (root.anchor && root.anchor.screen) ? root.anchor.screen : root.focusedScreen()
+        Shell.closePopups("ewe.places")    // one add-on popup at a time
         root.open = true
     }
     function toggleAt(a) { if (root.open) root.close(); else root.openAt(a) }
     function close() { root.open = false }
     onOpenChanged: Shell.setActive("ewe.places.toggle", root.open)
+    // another add-on's popup is opening (Shell.closePopups): this is not an
+    // AnchoredPopup, so it joins the one-popup rule by hand
+    Connections {
+        target: Shell
+        function onPopupsClosing(exceptId) { if (root.open && exceptId !== "ewe.places") root.close() }
+    }
+
+    // The dock item (manifest dockItem, drawn by the dock add-on) is hidden
+    // when the `button` setting says bar-only; the dock filters on it live.
+    readonly property string mode: (root.settings && root.settings.button) ? String(root.settings.button) : "auto"
+    readonly property bool dockItemWanted: root.mode !== "bar"
+    onDockItemWantedChanged: Shell.setDockItemShown("ewe.places", root.dockItemWanted)
 
     Component.onCompleted: {
         Shell.registerAction("ewe.places.toggle", function (a) { root.toggleAt(a) })
+        Shell.setDockItemShown("ewe.places", root.dockItemWanted)
         root.openScreen = root.focusedScreen()
         initProc.running = true
     }
-    Component.onDestruction: Shell.registerAction("ewe.places.toggle", null)
+    Component.onDestruction: { Shell.registerAction("ewe.places.toggle", null); Shell.setDockItemShown("ewe.places", true) }
 
     IpcHandler {
         target: "ewe.places"

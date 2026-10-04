@@ -27,7 +27,7 @@ Komble → Add-ons → Places, or `ewe-plugin set ewe.places button bar`:
 
 | key | values | default | meaning |
 |---|---|---|---|
-| `button` | `auto` `bar` `dock` `both` | `auto` | where the button lives — `auto` puts it in the bar only while no dock is present; `dock` never shows it in the bar. (A dock item is static today: `bar` cannot hide it from an installed dock.) |
+| `button` | `auto` `bar` `dock` `both` | `auto` | where the button lives — `auto` puts it in the bar only while no dock is present; `dock` never shows it in the bar.; `bar` also hides the dock item. |
 
 Pinned folders are your `[[apps.places]]` in `ewe.conf` — the same list
 ewe-settings shows and ewe-sync carries between machines. The panel reads
